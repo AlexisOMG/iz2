@@ -1,0 +1,6 @@
+cmake-build-debug
+build
+venv
+.idea
+templates/test_files
+
