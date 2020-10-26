@@ -3,4 +3,5 @@ build
 venv
 .idea
 templates/test_files
+test_files
 
