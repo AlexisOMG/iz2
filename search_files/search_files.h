@@ -9,6 +9,9 @@
 
 #define COUNT_FILE "/.count"
 #define PATH_MAX_LENGTH 127
+#define AMOUNT_TOP_FILES 5
+
+int get_amount_of_files(char *path_to_dir);
 
 void print_top_files(char *path_to_dir, char *request);
 

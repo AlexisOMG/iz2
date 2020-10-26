@@ -19,10 +19,6 @@ static void count_entry(char *path, char *request, char *path_to_count_file) {
     char *redirect = " >> ";
     char *cmd = (char*)calloc(strlen(grep) + strlen(request) + strlen(path) + strlen(redirect) + strlen(path_to_count_file) + 10,
             sizeof(char));
-    if (cmd == NULL) {
-        fprintf(stderr, "%s\n", "Error with allocating cmd");
-        exit(EXIT_FAILURE);
-    }
     cmd[0] = '\0';
     cmd = strncat(strncat(strncat(strncat(strncat(cmd, grep, strlen(grep)), request, strlen(request)), path, strlen(path)),
             redirect, strlen(redirect)), path_to_count_file, strlen(path_to_count_file));
@@ -40,10 +36,6 @@ static File_info* handle_files(int count_files, char *path_to_count_file) {
 
     File_info info;
     info.path_to_file = (char*)calloc(PATH_MAX_LENGTH, sizeof(char));
-    if (info.path_to_file == NULL) {
-        fprintf(stderr, "%s\n", "Unable to alloc path_to_file");
-        exit(EXIT_FAILURE);
-    }
 
     File_info *arr = (File_info*)calloc(count_files, sizeof(File_info));
     int ind = 0;
@@ -62,7 +54,11 @@ static File_info* handle_files(int count_files, char *path_to_count_file) {
     return arr;
 }
 
-static int get_count_of_files(char *path_to_dir) {
+int get_amount_of_files(char *path_to_dir) {
+    if (path_to_dir == NULL || strlen(path_to_dir) == 0) {
+        fprintf(stderr, "%s\n", "Incorrect path to dir");
+        exit(EXIT_FAILURE);
+    }
     DIR *dir = opendir(path_to_dir);
     if (dir == NULL) {
         fprintf(stderr, "%s\n", "Error with opening dir");
@@ -87,12 +83,22 @@ static int get_count_of_files(char *path_to_dir) {
 }
 
 File_info* handle_dir(char *path_to_dir, char *req) {
+    if (path_to_dir == NULL || req == NULL || strlen(path_to_dir) == 0 || strlen(req) == 0) {
+        fprintf(stderr, "%s\n", "Incorrect input");
+        exit(EXIT_FAILURE);
+    }
     char *request = (char*)malloc(strlen(req) + 4);
     request[0] = '\"';
     request[1] = '\0';
     request = strncat(strncat(strncat(request, req, strlen(req)), "\"", strlen("\"")), " ", strlen(" "));
     char *path_to_count_file = (char*)calloc(strlen(path_to_dir) + strlen(COUNT_FILE) + 1, sizeof(char));
     path_to_count_file = strncat(strncat(path_to_count_file, path_to_dir, strlen(path_to_dir)), COUNT_FILE, strlen(COUNT_FILE));
+
+    DIR *dir = opendir(path_to_dir);
+    if (dir == NULL) {
+        fprintf(stderr, "%s\n", "Error with opening dir");
+        exit(EXIT_FAILURE);
+    }
 
     FILE *out = fopen(path_to_count_file, "w");
     if (out == NULL) {
@@ -101,12 +107,6 @@ File_info* handle_dir(char *path_to_dir, char *req) {
     }
     if (fclose(out)) {
         fprintf(stderr, "%s\n", "Unable to close file");
-        exit(EXIT_FAILURE);
-    }
-
-    DIR *dir = opendir(path_to_dir);
-    if (dir == NULL) {
-        fprintf(stderr, "%s\n", "Error with opening dir");
         exit(EXIT_FAILURE);
     }
 
@@ -137,24 +137,28 @@ File_info* handle_dir(char *path_to_dir, char *req) {
 }
 
 void print_top_files(char *path_to_dir, char *request) {
+    if (path_to_dir == NULL || request == NULL || strlen(path_to_dir) == 0 || strlen(request) == 0) {
+        fprintf(stderr, "%s\n", "Incorrect input");
+        exit(EXIT_FAILURE);
+    }
     File_info *arr = handle_dir(path_to_dir, request);
-    int size = get_count_of_files(path_to_dir);
-    for (int i = 0; i < size && i < 5; ++i) {
+    int size = get_amount_of_files(path_to_dir);
+    for (int i = 0; i < size && i < AMOUNT_TOP_FILES; ++i) {
         printf("%s %d\n", arr[i].path_to_file, arr[i].count_entry);
     }
     free(arr);
 }
 
 void assign(File_info *receiver, File_info *source) {
+    if (receiver == NULL || source == NULL) {
+        fprintf(stderr, "%s\n", "Unable to assign");
+        exit(EXIT_FAILURE);
+    }
     receiver->count_entry = source->count_entry;
     if (receiver->path_to_file != NULL) {
         free(receiver->path_to_file);
     }
     receiver->path_to_file = (char*)calloc(strlen(source->path_to_file) + 1, sizeof(char));
-    if (receiver->path_to_file == NULL) {
-        fprintf(stderr, "%s\n", "Unable to calloc receiver");
-        exit(EXIT_FAILURE);
-    }
     receiver->path_to_file = strncpy(receiver->path_to_file, source->path_to_file, strlen(source->path_to_file) * sizeof(char));
     receiver->path_to_file[strlen(source->path_to_file)] = '\0';
 }
