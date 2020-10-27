@@ -1,4 +1,4 @@
-file(GLOB sources "${PROJECT_SOURCE_DIR}/search_files/*.c")
+file(GLOB sources "${PROJECT_SOURCE_DIR}/search_files_continuously/*.c")
 file(GLOB sources "${PROJECT_SOURCE_DIR}/sort/*.c")
 file(GLOB sources "${PROJECT_SOURCE_DIR}/src/*.c")
 list(REMOVE_ITEM sources "${PROJECT_SOURCE_DIR}/src/main.c")

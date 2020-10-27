@@ -96,16 +96,22 @@ File_info* handle_dir(char *path_to_dir, char *req) {
 
     DIR *dir = opendir(path_to_dir);
     if (dir == NULL) {
+        free(path_to_count_file);
+        free(request);
         fprintf(stderr, "%s\n", "Error with opening dir");
         exit(EXIT_FAILURE);
     }
 
     FILE *out = fopen(path_to_count_file, "w");
     if (out == NULL) {
+        free(path_to_count_file);
+        free(request);
         fprintf(stderr, "%s\n", "Unable to open file on writing");
         exit(EXIT_FAILURE);
     }
     if (fclose(out)) {
+        free(path_to_count_file);
+        free(request);
         fprintf(stderr, "%s\n", "Unable to close file");
         exit(EXIT_FAILURE);
     }
@@ -126,12 +132,20 @@ File_info* handle_dir(char *path_to_dir, char *req) {
     }
 
     if (closedir(dir) == -1) {
+        free(path_to_count_file);
+        free(request);
         fprintf(stderr, "%s\n", "Error with closing dir");
         exit(EXIT_FAILURE);
     }
 
-    free(request);
+
     File_info *result = handle_files(cnt_files, path_to_count_file);
+    free(request);
+    if (remove(path_to_count_file) == -1) {
+        free(path_to_count_file);
+        fprintf(stderr, "%s\n", "Unable to delete .count file");
+        exit(EXIT_FAILURE);
+    }
     free(path_to_count_file);
     return result;
 }

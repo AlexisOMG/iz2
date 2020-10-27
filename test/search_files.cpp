@@ -92,5 +92,5 @@ TEST(get_amount_of_files, incorrect_path) {
 
 TEST(get_amount_of_files, correct_amount_of_files) {
     std::string path_to_dir = "../../test_files";
-    EXPECT_EQ(get_amount_of_files(&path_to_dir[0]), 501);
+    EXPECT_EQ(get_amount_of_files(&path_to_dir[0]), 500);
 }
