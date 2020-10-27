@@ -42,6 +42,12 @@ matrix:
     - os: linux
       env:
         - TEST='Coverage && Valgrind'
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - valgrind
       script:
         - gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv 78BD65473CB3BD13
         - gpg --export --armor 78BD65473CB3BD13 | sudo apt-key add -
