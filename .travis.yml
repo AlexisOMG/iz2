@@ -43,6 +43,13 @@ matrix:
       env:
         - TEST='Coverage && Valgrind'
       script:
+        - gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv 78BD65473CB3BD13
+        - gpg --export --armor 78BD65473CB3BD13 | sudo apt-key add -
+        - sudo apt-get update
+        - echo -ne '\n' | sudo add-apt-repository ppa:deadsnakes/ppa
+        - sudo apt-get update
+        - sudo apt install python3.6
+        - curl https://bootstrap.pypa.io/get-pip.py | python3.6 - --user
         - python3.6 -m pip install gcovr
         - mkdir build
         - cd build/
@@ -57,14 +64,6 @@ matrix:
       env:
         - TEST="Cppcheck"
       script:
-        - gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv 78BD65473CB3BD13
-        - gpg --export --armor 78BD65473CB3BD13 | sudo apt-key add -
-        - sudo apt-get update
-        - echo -ne '\n' | sudo add-apt-repository ppa:deadsnakes/ppa
-        - sudo apt-get update
-        - sudo apt install python3.6
-        - curl https://bootstrap.pypa.io/get-pip.py | python3.6 - --user
-        - python3.6 set_test_files.py
         - mkdir build
         - cd build/
         - cmake -DENABLE_CPPCHECK=ON -DCMAKE_C_COMPILER="gcc" ..
