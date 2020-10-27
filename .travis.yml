@@ -78,7 +78,12 @@ matrix:
         - cd ..
         - rm -rf build
 
-addons:
-  artifacts:
-    paths:
-    - coverage/
+deploy:
+  provider: releases
+  file:
+  - coverage/index.html
+  - coverage/index.search_files_continuously_implementation_search_files.c.html
+  - coverage/index.sort_implementation_sort.c.html
+  skip_cleanup: true
+  on:
+    tags: false
