@@ -1,0 +1,75 @@
+dist:   trusty
+sudo:   required
+
+language:   c
+
+compiler:
+  - gcc
+
+before_script:
+  - |
+    mkdir -p external/cmake
+    pushd external/cmake
+    wget https://cmake.org/files/v3.19/cmake-3.19.0-rc1-Linux-x86_64.sh
+    chmod +x cmake-*-Linux-x86_64.sh
+    ./cmake-*-Linux-x86_64.sh --exclude-subdir --skip-license
+    export PATH="${PWD}/bin:$PATH"
+    popd
+    gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv 78BD65473CB3BD13
+    gpg --export --armor 78BD65473CB3BD13 | sudo apt-key add -
+    apt-get update
+    echo -ne '\n' | add-apt-repository ppa:deadsnakes/ppa
+    apt-get update
+    apt install python3.6
+    curl https://bootstrap.pypa.io/get-pip.py | python3.6 - --user
+    python3.6 set_test_files.py
+
+env:
+  global:
+    secure: "rmW4aamC7VRPU4pMnDw7xs97utRBgfPzJillBGKaIypUKejOyN3rPkr0zurntJJD2Z+f5D5KDpOqd8Knu7A8B9cGo0yEPpa0bpBmWRyQMety/JuI/8OVk+/c5x/mq1qr/ge7n1BDdnAs/uVj6KIQH7231qnBzlHG9fc5IgeIogqXvSjwIZJvNkX5ds6A4k57upsoAE0UPL/zLt0zb6OEBlOPcmU5cD3vPE8JtBq7i9aHiiOHD1S6sv9K2k/4dcdumbAbBwBlIhggqMdyZ/teDJYCOK2qf+x6Op1xkY2QA7l+NHt0RIXHIw3668SSHKHoAnAF3GjXT7g8dA9hoCQs/fX5eM2E2oY6nGAgulA5DWmH8mNRyvKjKqjnFUXHqc3UtyrNCPzenDTEo4lm7UXux5D4AldBLfdGSIwt2bej52Xq/FV6Nu93+iGKT3e/3JvHyOZEJkZsIWhs+YvgdoF2EfNtIWo012YNS3+P79RPrYU1BITOtt9DYc89wOshChhEAD71yHW4d29kaSyAKozMVGI1KW+UUs6ggqg5MWnbkCjSLEhF7tx1Mcl6WNDU8hkFctrZaIdIBZcZ5vUrxPQuAcvaOybQbXB+SFblC+37lH81pf7HkYckCADLkexUtP05ULyrkdCu8qdRqVGC544mMpDh71Enk9mdcLUdM7+VJw4="
+
+matrix:
+    include:
+
+      - os: linux
+      env:
+        - TEST="gtest"
+      script:
+        - mkdir build
+        - cd build/
+        - cmake ..
+        - make
+        - ctest
+        - cd ..
+        - rm -rf build/
+
+      - os: linux
+        env:
+          - TEST='Coverage && Valgrind'
+        script:
+          - python3.6 -m pip install gcovr
+          - mkdir build
+          - cd build/
+          - cmake -DCMAKE_BUILD_TYPE=Debug ..
+          - make
+          - make coverage
+          - cp -r coverage/ ../
+          - cd ..
+          - rm -rf build
+
+      - os: linux
+        env:
+          - TEST="Cppcheck"
+        script:
+          - mkdir build
+          - cd build/
+          - cmake -DENABLE_CPPCHECK=ON -DCMAKE_C_COMPILER="gcc" ..
+          - make
+          - make check
+          - cd ..
+          - rm -rf build
+
+addons:
+  artifacts:
+    paths:
+    - coverage/
