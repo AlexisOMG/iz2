@@ -80,10 +80,11 @@ matrix:
 
 deploy:
   provider: releases
-  file:
-  - coverage/index.html
-  - coverage/index.search_files_continuously_implementation_search_files.c.html
-  - coverage/index.sort_implementation_sort.c.html
+  api_key:
+    secure: "A/Niftrj7JJd6eKUZMg25iZ6VQ3cubFl5hYe77AutfXl3yUr8FMs1cvPX8uMhrZ8WVAB4xoyYcwTm3dlq3mFpRXn7JdKSVyJowha7zbGOH5bUcxTPfvWfIbLFn1qIK0PYAVonAekrMs8NH//e0XT3tH3OhbfyTabiCThhmy4/+K2H+bwSuHiJlSB1uOe0CKhKqPJwtRg2mQ2CMRfvWzAESksV+4SJiMzThajAnUgVg5efO+OzcFfT+zvkDzTNU9d7ysGd3rnADIFpIiRhRnGOZcFJDsgFmaWqqyM8QM+YclzsqcrOv1DbESkzAjKrsY18hRPO9+2d4pEsJZjVeWqh4ggWeYb5128omPsDuGslqGcDVxRqoKmfeD3ncEp5Dgt+lD/iB2e6FikpAi3Tv4+xChILSivVzu+f6SBRYbLm7BClfRqMOwaKxfiZlxhd7DmCoKA97oi2csRp2Oe00qUrz1MnUZWKg4pL4sDpKGvNZaPwFfXn34JtZGvFXa8CDnSyYf7jKS1KsAcxpQs/NLgjlSbh0RUxopg6cCBFNG0f9bIF8t+s/TvLd0hS9aGwTLnrbAkzEAvYkOPJlB5U1TYLu4K5EpQ99p+srKL5p5E7Q1B8WYi+aDcKm6XQYAMHDjAG7WvAMRbhtg/lovpFekhKmXNZX9p4duF2CPSmLXS3Z4="
+  file_glob: true
+  file: coverage/*
   skip_cleanup: true
+  overwrite: true
   on:
-    tags: false
+    tags: true
