@@ -9,7 +9,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -Wpedantic")
 
 
-# Add static lib
+# Add static lib sort and search_files
 
 add_library(sort_static_lib STATIC sort/implementation_sort.c)
 add_library(search_files_static_lib STATIC search_files_continuously/implementation_search_files.c)
