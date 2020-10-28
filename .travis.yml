@@ -86,3 +86,5 @@ deploy:
   file: coverage/*
   skip_cleanup: true
   overwrite: true
+  on:
+    all_branches: true
