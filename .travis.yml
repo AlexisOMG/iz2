@@ -29,11 +29,23 @@ matrix:
 
     - os: linux
       env:
-        - TEST="gtest"
+        - TEST="gtest static lib"
       script:
         - mkdir build
         - cd build/
         - cmake ..
+        - make
+        - ctest --output-on-failure
+        - cd ..
+        - rm -rf build/
+
+    - os: linux
+      env:
+        - TEST="gtest shared lib"
+      script:
+        - mkdir build
+        - cd build/
+        - cmake -DDYNAMIC_LIB=ON ..
         - make
         - ctest --output-on-failure
         - cd ..

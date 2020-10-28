@@ -1,3 +1,4 @@
+include_directories(${PROJECT_SOURCE_DIR}/search_files_continuously ${PROJECT_SOURCE_DIR}/sort)
 file(GLOB sources "${PROJECT_SOURCE_DIR}/search_files_continuously/*.c")
 file(GLOB sources "${PROJECT_SOURCE_DIR}/sort/*.c")
 file(GLOB sources "${PROJECT_SOURCE_DIR}/src/*.c")
@@ -13,6 +14,6 @@ foreach(file ${tests})
             ${sources}
             ${file}
             "${PROJECT_SOURCE_DIR}/test/main.cpp")
-    target_link_libraries("${name}_tests" gtest_main search_files_static_lib)
+    target_link_libraries("${name}_tests" gtest_main search_files_lib)
     add_test(NAME ${name} COMMAND "${name}_tests")
 endforeach()

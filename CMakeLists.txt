@@ -9,10 +9,6 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -Wpedantic")
 
 
-# Add static lib sort and search_files
-
-add_library(sort_static_lib STATIC sort/implementation_sort.c)
-add_library(search_files_static_lib STATIC search_files_continuously/implementation_search_files.c)
 
 
 ##
@@ -108,8 +104,12 @@ endif()
 ##
 
 add_executable(iz2 src/main.c)
-target_include_directories(iz2 PUBLIC search_files_continuously)
-target_include_directories(sort_static_lib PUBLIC sort)
-target_include_directories(search_files_static_lib PUBLIC search_files_continuously sort)
-target_link_libraries(search_files_static_lib PRIVATE sort_static_lib gcov)
-target_link_libraries(iz2 PRIVATE search_files_static_lib)
+target_include_directories(iz2 PUBLIC search_files_continuously sort)
+include_directories(sort search_files_continuously)
+if (DYNAMIC_LIB)
+    add_library(search_files_lib SHARED sort/implementation_sort.c search_files_continuously/implementation_search_files.c)
+else ()
+    add_library(search_files_lib STATIC sort/implementation_sort.c search_files_continuously/implementation_search_files.c)
+endif ()
+target_link_libraries(search_files_lib PRIVATE gcov)
+target_link_libraries(iz2 PRIVATE search_files_lib)
