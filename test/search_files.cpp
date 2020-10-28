@@ -51,7 +51,7 @@ TEST(print_top_files, correct_path_and_request) {
     std::string req = "a\0";
     print_top_files(&path[0], &req[0]);
     std::string out = testing::internal::GetCapturedStdout();
-    std::string test = "../../test_files/8.txt 10\n../../test_files/479.txt 10\n../../test_files/182.txt 10\n../../test_files/66.txt 10\n../../test_files/183.txt 10\n";
+    std::string test = "../../test_files/268.txt 10\n../../test_files/436.txt 10\n../../test_files/453.txt 10\n../../test_files/248.txt 10\n../../test_files/466.txt 10\n";
     EXPECT_EQ(out, test);
 }
 

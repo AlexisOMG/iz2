@@ -50,11 +50,11 @@ matrix:
             - valgrind
       script:
         - gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv 78BD65473CB3BD13
-        - gpg --export --armor 78BD65473CB3BD13 | apt-key add -
-        - apt-get update
-        - echo -ne '\n' | add-apt-repository ppa:deadsnakes/ppa
-        - apt-get update
-        - apt install python3.6
+        - gpg --export --armor 78BD65473CB3BD13 | sudo apt-key add -
+        - sudo apt-get update
+        - echo -ne '\n' | sudo add-apt-repository ppa:deadsnakes/ppa
+        - sudo apt-get update
+        - sudo apt install python3.6
         - curl https://bootstrap.pypa.io/get-pip.py | python3.6 - --user
         - python3.6 -m pip install gcovr
         - mkdir build
