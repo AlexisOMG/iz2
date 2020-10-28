@@ -1,6 +1,7 @@
 import os
 
 os.mkdir('test_files')
+os.mkdir('empty_dir')
 
 data = ['a' for i in range(500)]
 letter = 'a'

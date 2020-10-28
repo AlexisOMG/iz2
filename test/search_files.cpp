@@ -35,6 +35,16 @@ TEST(handle_dir, empty_input) {
     EXPECT_EXIT(handle_dir(&path[0], NULL), ::testing::ExitedWithCode(EXIT_FAILURE), "Incorrect input");
 }
 
+TEST(print_top_files, no_files) {
+    testing::internal::CaptureStdout();
+    std::string path = "../../empty_dir\0";
+    std::string req = "a\0";
+    print_top_files(&path[0], &req[0]);
+    std::string out = testing::internal::GetCapturedStdout();
+    std::string test = "No files\n";
+    EXPECT_EQ(out, test);
+}
+
 TEST(print_top_files, correct_path_and_request) {
     testing::internal::CaptureStdout();
     std::string path = "../../test_files\0";
@@ -42,7 +52,7 @@ TEST(print_top_files, correct_path_and_request) {
     print_top_files(&path[0], &req[0]);
     std::string out = testing::internal::GetCapturedStdout();
     std::string test = "../../test_files/8.txt 10\n../../test_files/479.txt 10\n../../test_files/182.txt 10\n../../test_files/66.txt 10\n../../test_files/183.txt 10\n";
-    EXPECT_EQ(1, 1);
+    EXPECT_EQ(out, test);
 }
 
 TEST(assign, null_pointers) {

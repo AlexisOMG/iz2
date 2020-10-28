@@ -28,6 +28,9 @@ static void count_entry(char *path, char *request, char *path_to_count_file) {
 }
 
 static File_info* handle_files(int count_files, char *path_to_count_file) {
+    if (count_files == 0) {
+        return NULL;
+    }
     FILE *in = fopen(path_to_count_file, "r");
     if (in == NULL) {
         fprintf(stderr, "%s\n", "Unable to open file");
@@ -68,7 +71,7 @@ int get_amount_of_files(char *path_to_dir) {
     int cnt_files = 0;
     struct dirent *el;
     while ((el = readdir(dir)) != NULL) {
-        if (el->d_type == 4) {
+        if (el->d_type == 4 || strncmp(el->d_name, ".count", strlen(".count")) == 0) {
             continue;
         }
         ++cnt_files;
@@ -156,6 +159,10 @@ void print_top_files(char *path_to_dir, char *request) {
         exit(EXIT_FAILURE);
     }
     File_info *arr = handle_dir(path_to_dir, request);
+    if (arr == NULL) {
+        printf("No files\n");
+        return;
+    }
     int size = get_amount_of_files(path_to_dir);
     for (int i = 0; i < size && i < AMOUNT_TOP_FILES; ++i) {
         printf("%s %d\n", arr[i].path_to_file, arr[i].count_entry);
