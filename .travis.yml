@@ -1,0 +1,102 @@
+dist:   trusty
+sudo:   required
+
+language:   c
+
+compiler:
+    - gcc
+
+before_script:
+    - |
+      if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+        mkdir -p external/cmake
+        pushd external/cmake
+        wget https://cmake.org/files/v3.19/cmake-3.19.0-rc1-Linux-x86_64.sh
+        chmod +x cmake-*-Linux-x86_64.sh
+        ./cmake-*-Linux-x86_64.sh --exclude-subdir --skip-license
+        export PATH="${PWD}/bin:$PATH"
+        popd
+        python3 set_test_files.py
+      fi
+
+
+env:
+  global:
+    secure: "A/Niftrj7JJd6eKUZMg25iZ6VQ3cubFl5hYe77AutfXl3yUr8FMs1cvPX8uMhrZ8WVAB4xoyYcwTm3dlq3mFpRXn7JdKSVyJowha7zbGOH5bUcxTPfvWfIbLFn1qIK0PYAVonAekrMs8NH//e0XT3tH3OhbfyTabiCThhmy4/+K2H+bwSuHiJlSB1uOe0CKhKqPJwtRg2mQ2CMRfvWzAESksV+4SJiMzThajAnUgVg5efO+OzcFfT+zvkDzTNU9d7ysGd3rnADIFpIiRhRnGOZcFJDsgFmaWqqyM8QM+YclzsqcrOv1DbESkzAjKrsY18hRPO9+2d4pEsJZjVeWqh4ggWeYb5128omPsDuGslqGcDVxRqoKmfeD3ncEp5Dgt+lD/iB2e6FikpAi3Tv4+xChILSivVzu+f6SBRYbLm7BClfRqMOwaKxfiZlxhd7DmCoKA97oi2csRp2Oe00qUrz1MnUZWKg4pL4sDpKGvNZaPwFfXn34JtZGvFXa8CDnSyYf7jKS1KsAcxpQs/NLgjlSbh0RUxopg6cCBFNG0f9bIF8t+s/TvLd0hS9aGwTLnrbAkzEAvYkOPJlB5U1TYLu4K5EpQ99p+srKL5p5E7Q1B8WYi+aDcKm6XQYAMHDjAG7WvAMRbhtg/lovpFekhKmXNZX9p4duF2CPSmLXS3Z4="
+
+matrix:
+    include:
+
+    - os: linux
+      env:
+        - TEST="gtest static lib"
+      script:
+        - mkdir build
+        - cd build/
+        - cmake ..
+        - make
+        - ctest --output-on-failure
+        - cd ..
+        - rm -rf build/
+
+    - os: linux
+      env:
+        - TEST="gtest shared lib"
+      script:
+        - mkdir build
+        - cd build/
+        - cmake -DDYNAMIC_LIB=ON ..
+        - make
+        - ctest --output-on-failure
+        - cd ..
+        - rm -rf build/
+
+    - os: linux
+      env:
+        - TEST='Coverage && Valgrind'
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - valgrind
+      script:
+        - gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv 78BD65473CB3BD13
+        - gpg --export --armor 78BD65473CB3BD13 | sudo apt-key add -
+        - sudo apt-get update
+        - echo -ne '\n' | sudo add-apt-repository ppa:deadsnakes/ppa
+        - sudo apt-get update
+        - sudo apt install python3.6
+        - curl https://bootstrap.pypa.io/get-pip.py | python3.6 - --user
+        - python3.6 -m pip install gcovr
+        - mkdir build
+        - cd build/
+        - cmake -DCMAKE_BUILD_TYPE=Debug ..
+        - make
+        - make coverage
+        - cp -r coverage/ ../
+        - cd ..
+        - rm -rf build
+
+    - os: linux
+      env:
+        - TEST="Cppcheck"
+      script:
+        - mkdir build
+        - cd build/
+        - cmake -DENABLE_CPPCHECK=ON -DCMAKE_C_COMPILER="gcc" ..
+        - make
+        - make check
+        - cd ..
+        - rm -rf build
+
+deploy:
+  provider: releases
+  api_key:
+    secure: "A/Niftrj7JJd6eKUZMg25iZ6VQ3cubFl5hYe77AutfXl3yUr8FMs1cvPX8uMhrZ8WVAB4xoyYcwTm3dlq3mFpRXn7JdKSVyJowha7zbGOH5bUcxTPfvWfIbLFn1qIK0PYAVonAekrMs8NH//e0XT3tH3OhbfyTabiCThhmy4/+K2H+bwSuHiJlSB1uOe0CKhKqPJwtRg2mQ2CMRfvWzAESksV+4SJiMzThajAnUgVg5efO+OzcFfT+zvkDzTNU9d7ysGd3rnADIFpIiRhRnGOZcFJDsgFmaWqqyM8QM+YclzsqcrOv1DbESkzAjKrsY18hRPO9+2d4pEsJZjVeWqh4ggWeYb5128omPsDuGslqGcDVxRqoKmfeD3ncEp5Dgt+lD/iB2e6FikpAi3Tv4+xChILSivVzu+f6SBRYbLm7BClfRqMOwaKxfiZlxhd7DmCoKA97oi2csRp2Oe00qUrz1MnUZWKg4pL4sDpKGvNZaPwFfXn34JtZGvFXa8CDnSyYf7jKS1KsAcxpQs/NLgjlSbh0RUxopg6cCBFNG0f9bIF8t+s/TvLd0hS9aGwTLnrbAkzEAvYkOPJlB5U1TYLu4K5EpQ99p+srKL5p5E7Q1B8WYi+aDcKm6XQYAMHDjAG7WvAMRbhtg/lovpFekhKmXNZX9p4duF2CPSmLXS3Z4="
+  file_glob: true
+  file: coverage/*
+  skip_cleanup: true
+  overwrite: true
+  on:
+    all_branches: true
